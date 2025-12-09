@@ -1,119 +1,189 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="iloveself 的终端风格个人主页 — 仿旧式终端，展示项目与联系方式。" />
+    <meta name="theme-color" content="#001a00" />
     <title>iloveself - 终端个人主页</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap'); /* 引入像素字体 */
 
-        body {
-            background-color: #1a1a1a; /* 深黑背景 */
-            color: #00ff00; /* 亮绿色文字，模拟旧终端 */
-            font-family: 'VT323', monospace; /* 像素字体 */
-            font-size: 1.2em;
-            margin: 0;
-            padding: 20px;
-            overflow-y: auto; /* 允许滚动 */
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh; /* 最小高度充满视窗 */
+    <!-- 像素风格字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+
+    <style>
+        :root{
+            --bg: #1a1a1a;
+            --text: #00ff00;
+            --muted: #cccccc;
+            --accent: #00ffff;
+            --prompt: #ffff00;
+            --max-width: 900px;
         }
 
-        .terminal-header {
-            color: #00ffff; /* 青色标题 */
-            margin-bottom: 20px;
+        html,body{
+            height:100%;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'VT323', ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace;
+            font-size: 1.2em;
+            margin: 0;
+            padding: 24px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container{
+            width: 100%;
+            max-width: var(--max-width);
+        }
+
+        header.terminal-header {
+            color: var(--accent);
+            margin-bottom: 18px;
+        }
+
+        header.terminal-header h1{
+            font-size: 1.6em;
+            margin: 0;
+        }
+
+        .terminal {
+            /* 将终端区域作为语义区域，便于屏幕阅读器识别 */
         }
 
         .terminal-line {
             display: flex;
             align-items: center;
-            margin-bottom: 5px;
+            margin-bottom: 6px;
+            gap: 10px;
         }
 
         .prompt {
-            color: #ffff00; /* 黄色提示符 */
-            margin-right: 10px;
-            flex-shrink: 0; /* 防止提示符被压缩 */
+            color: var(--prompt);
+            flex-shrink: 0;
+            min-width: 220px; /* 保持提示符列对齐，可根据需要调整 */
         }
 
         .command {
-            color: #00ff00; /* 命令文本 */
-            white-space: pre-wrap; /* 允许换行 */
+            color: var(--text);
+            white-space: pre-wrap;
         }
 
-        .output {
-            color: #cccccc; /* 输出文本 */
-            white-space: pre-wrap; /* 允许换行 */
-            margin-left: 20px; /* 模拟缩进 */
+        pre.output {
+            color: var(--muted);
+            white-space: pre-wrap; /* 保留换行和空格 */
+            margin-left: 20px;
+            padding: 6px 0;
+            margin-top: 0;
+            margin-bottom: 12px;
+            font-family: inherit;
+            font-size: 0.95em;
         }
 
         .blinking-cursor {
-            background-color: #00ff00; /* 绿色光标 */
-            width: 8px;
-            height: 1.2em; /* 与字体高度一致 */
-            margin-left: 5px;
             display: inline-block;
-            animation: blink 1s step-end infinite; /* 光标闪烁动画 */
+            width: 8px;
+            height: 1.2em;
+            margin-left: 6px;
+            background-color: var(--text);
+            vertical-align: bottom;
+            animation: blink 1s step-end infinite;
         }
 
         @keyframes blink {
-            from, to { background-color: transparent; }
-            50% { background-color: #00ff00; }
+            0%,100% { opacity: 0; }
+            50% { opacity: 1; }
+        }
+
+        /* 如果用户选择减少运动，禁用闪烁动画 */
+        @media (prefers-reduced-motion: reduce) {
+            .blinking-cursor { animation: none; opacity: 1; }
         }
 
         a {
-            color: #00ffff; /* 链接颜色 */
+            color: var(--accent);
             text-decoration: none;
         }
 
-        a:hover {
+        a:hover, a:focus {
             text-decoration: underline;
+            outline: none;
+        }
+
+        a:focus {
+            /* 清晰的键盘焦点样式，利于无障碍 */
+            box-shadow: 0 0 0 3px rgba(0,255,255,0.12);
+            border-radius: 3px;
+        }
+
+        /* 响应式：小屏幕时减少提示符最小宽度，使内容不换行过早 */
+        @media (max-width: 520px) {
+            .prompt { min-width: 140px; }
+            body { padding: 14px; }
+        }
+
+        /* 小提示文字颜色更柔和 */
+        .hint {
+            color: #9fd8a6;
+            font-size: 0.85em;
+            margin-top: 6px;
         }
     </style>
 </head>
 <body>
-    <div class="terminal-header">
-        <h1>iloveself@github.io:~ $</h1>
-    </div>
+    <div class="container">
+        <header class="terminal-header">
+            <h1>iloveself@github.io:~ $</h1>
+        </header>
 
-    <div class="terminal-line">
-        <span class="prompt">iloveself@gh-pages:~$</span>
-        <span class="command">whoami</span>
-    </div>
-    <div class="output">
-        User: iloveself<br>
-        Role: Enthusiastic GitHub Pages Explorer<br>
-        Status: Online
-    </div>
+        <main class="terminal" role="region" aria-label="终端式个人简介">
+            <div class="terminal-line" aria-hidden="false">
+                <div class="prompt">iloveself@gh-pages:~$</div>
+                <div class="command" role="note"><code>whoami</code></div>
+            </div>
+            <pre class="output" aria-live="polite">
+User: iloveself
+Role: Enthusiastic GitHub Pages Explorer
+Status: Online
+            </pre>
 
-    <div class="terminal-line">
-        <span class="prompt">iloveself@gh-pages:~$</span>
-        <span class="command">ls -al projects</span>
-    </div>
-    <div class="output">
-        drwxr-xr-x 2 iloveself users 4096 Jan 1 00:00 .<br>
-        drwxr-xr-x 2 iloveself users 4096 Jan 1 00:00 ..<br>
-        -rw-r--r-- 1 iloveself users 1024 Jan 1 2023 my-first-page.html<br>
-        -rw-r--r-- 1 iloveself users 2048 Jan 10 2024 awesome-project.js<br>
-        <br>
-        Check out my projects on GitHub: <a href="https://github.com/iloveself" target="_blank">github.com/iloveself</a>
-    </div>
+            <div class="terminal-line">
+                <div class="prompt">iloveself@gh-pages:~$</div>
+                <div class="command"><code>ls -al projects</code></div>
+            </div>
+            <pre class="output">
+drwxr-xr-x 2 iloveself users 4096 Jan 1 00:00 .
+drwxr-xr-x 2 iloveself users 4096 Jan 1 00:00 ..
+-rw-r--r-- 1 iloveself users 1024 Jan 1 2023 my-first-page.html
+-rw-r--r-- 1 iloveself users 2048 Jan 10 2024 awesome-project.js
 
-    <div class="terminal-line">
-        <span class="prompt">iloveself@gh-pages:~$</span>
-        <span class="command">contact</span>
-    </div>
-    <div class="output">
-        Email: ？？？？？？@email.com (请替换成你的邮箱)<br>
-        Social: <a href="#" target="_blank">Twitter</a> | <a href="#" target="_blank">LinkedIn</a> (请替换成你的社交链接)<br>
-        <br>
-        Feel free to reach out!
-    </div>
+Check out my projects on GitHub: 
+https://github.com/iloveself
+            </pre>
 
-    <div class="terminal-line">
-        <span class="prompt">iloveself@gh-pages:~$</span>
-        <span class="command">_</span><span class="blinking-cursor"></span>
+            <div class="terminal-line">
+                <div class="prompt">iloveself@gh-pages:~$</div>
+                <div class="command"><code>contact</code></div>
+            </div>
+            <pre class="output">
+Email: yourname@example.com   (请替换为你的真实邮箱；为防止垃圾邮件，可使用图片、联系表单或 JS 混淆)
+Social: Twitter | LinkedIn   (请替换成你的社交链接)
+            </pre>
+            <div class="hint">提示：把 "yourname@example.com" 替换为你的邮箱，或将链接替成实际的社交页面（外部链接建议添加 rel="noopener noreferrer"）。</div>
+
+            <div class="terminal-line">
+                <div class="prompt">iloveself@gh-pages:~$</div>
+                <div class="command">_<span class="blinking-cursor" aria-hidden="true"></span></div>
+            </div>
+        </main>
+
+        <footer style="margin-top:18px;color:#6dffb7;font-size:0.9em;">
+            <a href="https://github.com/iloveself" target="_blank" rel="noopener noreferrer" aria-label="访问 iloveself 的 GitHub 仓库">我的 GitHub</a>
+        </footer>
     </div>
 </body>
 </html>
